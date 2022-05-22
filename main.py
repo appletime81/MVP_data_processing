@@ -57,56 +57,56 @@ def get_all_file_names(path):
     return all_file_names
 
 
+def get_all_excel_file_col_name(path):
+    all_file_names = get_all_file_names(path)
+    all_diff_col_names_list = []
+    for i, file_name in enumerate(all_file_names):
+        data = pd.read_excel(os.path.join(path, file_name), sheet_name=0, header=0)
+        data.dropna(axis=0, how="all", inplace=True)
+        tmp_col_names_list = ["Database"] + data.iloc[:, 0].to_list()
+        tmp_col_names_list = get_column_names(tmp_col_names_list)
+        tmp_col_names_set = set(tmp_col_names_list)
+
+        # get difference between original column names and current column names
+        diff_col_names_list = list(tmp_col_names_set.difference(set(ORIG_COL_NAMES)))
+
+        # get all different column names
+        all_diff_col_names_list += diff_col_names_list
+
+    all_diff_col_names_list = list(set(all_diff_col_names_list))
+    all_col_names = ORIG_COL_NAMES + all_diff_col_names_list
+    return all_col_names
+
+
 def convert_to_dataframe(data):
-    # get original data keys
-    data.dropna(inplace=True)
-    data_dict = data.to_dict()
-    new_data_dict = dict()
-    keys = list(data_dict.keys())
-    key1 = "Database"
-    keys.pop(keys.index(key1))
-    key2 = keys[0]
+    data_dict = {}
 
-    # generate new dictionary of data
-    col_names = get_column_names(list(data_dict[key1].values()))
-    for key, value in zip(ORIG_COL_NAMES, list(data_dict[key2].values())):
-        new_data_dict[key] = [value]
-    new_data_dict[key1] = [key2]
+    pass
 
-    # convert dictionary to dataframe
-    df = pd.DataFrame(new_data_dict)
 
-    # recompose column names
-    new_col_names = ORIG_COL_NAMES + list(set(col_names) - set(ORIG_COL_NAMES))
 
-    # rename column names
-    df = df.reindex(columns=new_col_names)
-    return df
+
 
 
 if __name__ == "__main__":
     start = time.time()
-    column_name_file = "MVP_Data_Summary.xlsx"
+
+    # set output file name
     output_file_name = "test.xlsx"
-    # pprint(get_column_names(column_name_file))
 
-    # get all excel file name
-    all_excel_file_names = get_all_file_names(os.getcwd())
+    # Step1: Get all column names
+    path = os.getcwd()
+    all_col_names = get_all_excel_file_col_name(path)
+    pprint(all_col_names)  # test print
 
-    # merge all excel
-    for i, file_name in enumerate(all_excel_file_names):
-        if i == 0:
-            data = pd.read_excel(file_name)
-            data = convert_to_dataframe(data)
-        else:
-            tempdata = pd.read_excel(file_name)
-            tempdata = convert_to_dataframe(tempdata)
-            data = pd.concat([data, tempdata], axis=0)
+    # Step2: Convert all excel files to dataframe
 
 
-    # save excel file
-    data.to_excel("test.xlsx", index=False)
 
-    # print execution time
-    print("Execution time: {} seconds".format(time.time() - start))
-    print("Done")
+
+
+
+
+
+
+
