@@ -54,7 +54,7 @@ def get_column_names(col_names):
 def get_all_file_names(path):
     all_file_names = []
     for file_name in sorted(os.listdir(path)):
-        if file_name.endswith(".xls"):
+        if file_name.endswith(".xlsx"):
             all_file_names.append(file_name)
     return all_file_names
 
@@ -63,6 +63,7 @@ def get_all_excel_file_col_name(path):
     all_file_names = get_all_file_names(path)
     all_diff_col_names_list = []
     for i, file_name in enumerate(all_file_names):
+        print(f"{file_name}")
         data = pd.read_excel(os.path.join(path, file_name), sheet_name=0, header=0)
         data.dropna(axis=0, how="all", inplace=True)
         tmp_col_names_list = ["Database"] + data.iloc[:, 0].to_list()
